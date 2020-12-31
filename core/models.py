@@ -20,6 +20,7 @@ class Customer(models.Model):
     data_sheet = models.OneToOneField(DataSheet, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
+
     def __str__(self):
         return self.name
 
