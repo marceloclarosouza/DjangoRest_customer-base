@@ -5,6 +5,14 @@ class Profession(models.Model):
     description = models.CharField(max_length=50)
 
 
+    @property
+    def status(self):
+        return True
+
+
+    def __str__(self):
+        return self.description
+
 class DataSheet(models.Model):
     description = models.CharField(max_length=50)
     historical_data = models.TextField()
@@ -19,6 +27,17 @@ class Customer(models.Model):
     professions = models.ManyToManyField(Profession)
     data_sheet = models.OneToOneField(DataSheet, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
+
+
+    @property
+    def status_message(self):
+        if self.active:
+            return "Active"
+        else:
+            return "Inactive"
+
+    def num_professions(self):
+        return self.professions.all().count()
 
 
     def __str__(self):

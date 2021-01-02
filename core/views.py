@@ -2,6 +2,14 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticatedOrReadOnly,
+    IsAdminUser,
+    DjangoModelPermissions,
+    DjangoModelPermissionsOrAnonReadOnly,
+)
 from django.http.response import HttpResponseNotAllowed
 from .models import Customer, Profession, DataSheet, Document
 from django_filters.rest_framework import DjangoFilterBackend
@@ -22,7 +30,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'address', 'data_sheet__description')
     ordering_fields = '__all__'
     ordering = ('id', )
-    loockup_field = 'id'  #id is the standad, may choose for another unique var such document
+    loockup_field = 'id' # doc number #id is the standad, may choose for another unique var such document
+    authentication_classes = [TokenAuthentication, ]
+
+
 
     def get_queryset(self):  ##replacing the GET method
         #import pdb; pdb.set_trace()
@@ -145,13 +156,21 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class ProfessionViewSet(viewsets.ModelViewSet):
     queryset = Profession.objects.all()
     serializer_class = ProfessionSerializer
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = [IsAdminUser, ]
 
 
 class DataSheetViewSet(viewsets.ModelViewSet):
     queryset = DataSheet.objects.all()
     serializer_class = DataSheetSerializer
+    permission_classes = [AllowAny, ]
+
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+    authentication_classes = [TokenAuthentication, ]
+    #permission_classes = [IsAuthenticatedOrReadOnly, ]
+    #permission_classes = [DjangoModelPermissionsOrAnonReadOnly, ]
+    permission_classes = [DjangoModelPermissions, ]
